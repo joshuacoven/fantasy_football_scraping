@@ -72,30 +72,6 @@ def combine_assembly(start_year, current_year):
     return database
 
 
-
-# For shifting columns to prepare across years
-def shift_col(frame, new_name, col_to_shift, magnitude):
-    frame1 = frame.sort_values(['Name', 'Year']).reset_index(drop = True)
-    frame1[new_name] = frame1[col_to_shift].shift(magnitude)
-    for i in range(len(frame1) - 1):
-        if frame1.loc[i, 'Name'] != frame1.loc[i+1, 'Name']:
-            if magnitude == -1:
-                frame1.loc[i, new_name] = np.nan
-            elif magnitude == 1:
-                frame1.loc[i+1, new_name] = np.nan
-    return frame1
-
-# To make a flag for switching teams
-def new_team(tm_prev, tm_curr):
-    if pd.notna(tm_prev) and pd.notna(tm_curr):
-        if (tm_prev != tm_curr) or (tm_curr == '2TM'):
-            val = 1
-        else:
-            val = 0
-    else:
-        val = np.nan
-    return val
-
 #Pull college stats from college football focus
 def college_assembly(start_year, current_year):
     database_qb = []
@@ -173,6 +149,36 @@ def ADP_assembly(start_year, current_year):
         else: database = database.append(dfyear, ignore_index = True)
     return database
 
+## alternate adp datasource, better data stability, many more years
+def new_assembly(start_year, current_year):
+    database = []
+    for x in range(start_year, current_year):
+        page = requests.get("http://www03.myfantasyleague.com/%d/adp?COUNT=500&POS=*&ROOKIES=0&INJURED=0&CUTOFF=5&FRANCHISES=-1&IS_PPR=1&IS_KEEPER=0&IS_MOCK=0&TIME=" % x)
+        soup = BeautifulSoup(page.content, 'html.parser')
+        table = soup.find_all('table')[1]
+        #print(soup.find_all('table'))
+        df = pd.read_html(str(table), header = 0)
+        dfyear = df[0]
+        dfyear['Year'] = x
+        if x == start_year:
+            database = dfyear
+        else: 
+            database = database.append(dfyear, ignore_index = True)
+        test = database
+        new_test = test.loc[test.Player.str.contains('QB')
+            | test.Player.str.contains('WR')
+            | test.Player.str.contains('RB')
+            | test.Player.str.contains('TE')].reset_index(drop = True)
+        new_test['List'] = new_test.Player.str.replace('*', '').str.replace(',', '').str.split(' ')
+        #new_test['FantPos'] = new_test['List'].apply(lambda x: x[len(x)-1])
+        new_test['Tm'] = new_test['List'].apply(lambda x: x[len(x)-2])
+        new_test['Name'] = new_test['List'].apply(lambda x: x[len(x)-3] + ' ' + x[0])
+        new_test['Name'] = new_test['Name']  + new_test['List'].apply(lambda x: ' ' + x[1] if len(x) == 5 else '')
+        new_test = new_test[['Name', 'Tm', 'Avg. Pick', 'Year']]  
+    return new_test.rename(columns = {'Avg. Pick': 'Overall'})
+
+
+
 
 def team_assembly(start_year, current_year):
     database = []
@@ -192,3 +198,30 @@ def team_assembly(start_year, current_year):
     #Rename columns, eliminate duplicate column titles as rows
     database = database.rename(columns = {'Win %':'Win_PCT'})
     return database
+
+
+
+
+# For shifting columns to prepare across years
+def shift_col(frame, new_name, col_to_shift, magnitude):
+    frame1 = frame.sort_values(['Name', 'Year']).reset_index(drop = True)
+    frame1[new_name] = frame1[col_to_shift].shift(magnitude)
+    for i in range(len(frame1) - 1):
+        if frame1.loc[i, 'Name'] != frame1.loc[i+1, 'Name']:
+            if magnitude == -1:
+                frame1.loc[i, new_name] = np.nan
+            elif magnitude == 1:
+                frame1.loc[i+1, new_name] = np.nan
+    return frame1
+
+# To make a flag for switching teams
+def new_team(tm_prev, tm_curr):
+    if pd.notna(tm_prev) and pd.notna(tm_curr):
+        if (tm_prev != tm_curr) or (tm_curr == '2TM') or (tm_prev == '2TM'):
+            val = 1
+        else:
+            val = 0
+    else:
+        val = np.nan
+    return val
+
