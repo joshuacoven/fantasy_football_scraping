@@ -4,6 +4,11 @@ import numpy as np
 import pandas as pd
 from bs4 import BeautifulSoup
 import statsmodels.formula.api as smf
+import copy
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import train_test_split
+
+
 
 ####################################### Functions ######################################
 
@@ -50,6 +55,12 @@ def rookie_assembly(start_year, current_year):
     #Rename columns, eliminate duplicate column titles as rows
     database = database.rename(columns = {'Player':'Name', 'Att':'PaAtt', 'Yds':'PaYds', 'TD':'PaTD','Att.1':'RuAtt', 'Yds.1':'RuYds', 'TD.1':'RuTD', 'Y/A':'RuY/A', 'Y/R':'ReYds/R', 'Att.2':'ReAtt', 'Yds.2':'ReYds', 'TD.2':'ReTD', 'Pos':'FantPos', 'College/Univ':'College'})
     database = database[database.Rnd != 'Rnd']
+    database = database[['Pick', 'Tm', 'Name', 'Age', 'College', 'Year', 'FantPos']]
+    # keep fantasy relevant positions
+    database = database.loc[(database.FantPos == 'QB') 
+             | (database.FantPos == 'WR')
+            | (database.FantPos == 'RB')
+            | (database.FantPos == 'TE')].reset_index(drop = True)
     return database
 
 # pull combine data from pro football focus
@@ -69,6 +80,22 @@ def combine_assembly(start_year, current_year):
     #Rename columns, eliminate duplicate column titles as rows
     database = database.rename(columns = {'Player':'Name', 'Broad Jump':'Broad_Jump', '3Cone':'Three_Cone', '40yd':'Dash'})
     database = database[database.Name != 'Player']
+    database = database.rename(columns = {'Pos':'FantPos'}) # for merge
+    database = database[['Name', 'Year', 'School', 'FantPos', 'Ht', 'Wt', 'Dash', 'Vertical', 'Bench', 'Broad_Jump', 'Three_Cone', 'Shuttle']]
+    #keep fantasy relevant positions
+    database = database.loc[(database.FantPos == 'QB') 
+             | (database.FantPos == 'WR')
+            | (database.FantPos == 'RB')
+            | (database.FantPos == 'TE')].reset_index(drop = True) 
+
+    database['height'] = database['Ht'].apply(lambda x: 12 * float(x.split('-')[0]) + float(x.split('-')[1]) \
+                                              if isinstance(x, str) else np.nan)
+
+    # impute combine statistics based on position mean
+    cols = ['height', 'Wt', 'Dash', 'Vertical', 'Bench', 'Broad_Jump', 'Three_Cone', 'Shuttle']
+    for i in cols:
+        database[i] = database[i].astype(float)
+        database[i] = database[i].fillna(database.groupby('FantPos')[i].transform('mean'))
     return database
 
 
@@ -130,12 +157,14 @@ def college_assembly(start_year, current_year):
     database = database[['Name', 'Year', 'School', 'Conf', 'G', 'Cmp', 'PaAtt', 'Pct', 'PaYds', 'PaTD', 'Int', 'RuYds', 'RuTD', 'RuAtt'
         , 'ReYds', 'ReTD', 'Rec']]
     database = database.drop_duplicates(subset = ['Name', 'School', 'Year'], keep = 'first')
-    database = database.drop_duplicates(subset = 'Name', keep = 'last')
-    #database = database.reset_index(drop = True)
+    database['latest_year'] = database.groupby('Name')['Year'].rank('dense', ascending = False)
+    database = database.loc[database.latest_year == 1].reset_index(drop = True).drop('latest_year', axis = 1)
+    database = database.fillna(0) # this fills in stats that are missing, works
+    database['Name'] = database['Name'].str.replace('Joshua Jacobs', 'Josh Jacobs') # make names match across databases
     return database
 
 
-def ADP_assembly(start_year, current_year):
+def ADP_assembly(start_year, current_year, rk_opt):
     database = []
     for x in range(start_year, current_year):
         page = requests.get("https://fantasyfootballcalculator.com/adp/ppr/12-team/all/%d" % x)
@@ -146,11 +175,17 @@ def ADP_assembly(start_year, current_year):
         dfyear['Year'] = x
         if x == start_year:
             database = dfyear
-        else: database = database.append(dfyear, ignore_index = True)
+        else: 
+            database = database.append(dfyear, ignore_index = True)
+        database = database[['Name', 'Year', 'Std.Dev']]
+        # the year is off of the profootball focus data by 1
+        if rk_opt != 'rookie':
+            database['Year'] = database['Year'] - 1
+        database = database.replace('Odell Beckham Jr', 'Odell Beckham')
     return database
 
 ## alternate adp datasource, better data stability, many more years
-def new_assembly(start_year, current_year):
+def new_assembly(start_year, current_year, rk_opt):
     database = []
     for x in range(start_year, current_year):
         page = requests.get("http://www03.myfantasyleague.com/%d/adp?COUNT=500&POS=*&ROOKIES=0&INJURED=0&CUTOFF=5&FRANCHISES=-1&IS_PPR=1&IS_KEEPER=0&IS_MOCK=0&TIME=" % x)
@@ -175,10 +210,47 @@ def new_assembly(start_year, current_year):
         new_test['Name'] = new_test['List'].apply(lambda x: x[len(x)-3] + ' ' + x[0])
         new_test['Name'] = new_test['Name']  + new_test['List'].apply(lambda x: ' ' + x[1] if len(x) == 5 else '')
         new_test = new_test[['Name', 'Tm', 'Avg. Pick', 'Year']]  
+        if rk_opt != 'rookie':
+            new_test['Year'] = new_test['Year'] - 1
+        new_test['Tm'] = new_test['Tm'].str.replace('JAC', 'JAX')
+        new_test['Tm'] = new_test['Tm'].str.replace('KCC', 'KAN')
+        new_test['Tm'] = new_test['Tm'].str.replace('GBP', 'GNB')
+        new_test['Tm'] = new_test['Tm'].str.replace('NOS', 'NOR')        
     return new_test.rename(columns = {'Avg. Pick': 'Overall'})
 
 
-
+tm_dict = {'Pittsburgh': 'PIT',
+ 'Philadelphia': 'PHI',
+ 'New England': 'NWE',
+ 'Minnesota': 'MIN',
+ 'Carolina': 'CAR',
+ 'LA Rams': 'LAR',
+ 'New Orleans': 'NOR',
+ 'Jacksonville': 'JAX',
+ 'Kansas City': 'KAN',
+ 'Atlanta': 'ATL',
+ 'LA Chargers': 'LAC',
+ 'Seattle': 'SEA',
+ 'Buffalo': 'BUG',
+ 'Dallas': 'DAL',
+ 'Tennessee': 'TEN',
+ 'Detroit': 'DET',
+ 'Baltimore': 'BAL',
+ 'Arizona': 'ARI',
+ 'Washington': 'WAS',
+ 'Green Bay': 'GNB',
+ 'Cincinnati': 'CIN',
+ 'Oakland': 'OAK',
+ 'San Francisco': 'SFO',
+ 'Miami': 'MIA',
+ 'Denver': 'DEN',
+ 'NY Jets': 'NYJ',
+ 'Tampa Bay': 'TAM',
+ 'Chicago': 'CHI',
+ 'Indianapolis': 'IND',
+ 'Houston': 'HOU',
+ 'NY Giants': 'NYG',
+ 'Cleveland': 'CLE'}
 
 def team_assembly(start_year, current_year):
     database = []
@@ -197,6 +269,9 @@ def team_assembly(start_year, current_year):
 
     #Rename columns, eliminate duplicate column titles as rows
     database = database.rename(columns = {'Win %':'Win_PCT'})
+    database['Tm'] = database['Team'].apply(lambda x: tm_dict[x])
+    database = database[['Tm', 'Win_PCT', 'Year']]
+    database['Win_PCT'] = database['Win_PCT'].apply(lambda x: float(x[0:len(x)-1]))
     return database
 
 
@@ -224,4 +299,62 @@ def new_team(tm_prev, tm_curr):
     else:
         val = np.nan
     return val
+
+### random forest model #################################################
+# inputs, a dictionary where each position has a dataframe of desired features, no nans, imputed values
+# a year one year before the year you want to predict for, ex: 2018 trains the model to make predictions about 2019
+# a window size, number of years of data you want to include in the model
+def rf_model(pos_dict, predict_year, sz):
+    model_dict = {}
+    predict_dict = {}
+    outcomes = {}
+    for pos in pos_dict:
+        print(pos)
+        target = copy.deepcopy(pos_dict[pos])
+        
+        # team dummy variables
+        dum = pd.get_dummies(target.Tm)
+        target = target.drop('Tm', axis = 1)
+        target = pd.concat([target, dum], axis=1)
+        
+        # save these values to evaluate predictions later
+        outcomes[pos] = target.loc[target.Year == predict_year]\
+            .reset_index(drop = True)[['Name', 'pts_next_year']]
+        
+        # set aside data to use for model prediction when the model is done
+        predict_dict[pos] = target.loc[target.Year == predict_year]\
+            .reset_index(drop = True)\
+            .drop(['Year', 'pts_next_year', 'Name'], axis=1)
+        
+        # make sure new values arent used in the modeling
+        target = target.loc[target.Year < predict_year].reset_index(drop = True)
+        # only use 'sz' years of data before prediction year
+        target = target.loc[target.Year > predict_year - sz].drop(['Year', 'Name'], axis=1)
+
+        # separate labels, targets, features
+        labels = np.array(target['pts_next_year'])
+        target = target.drop(['pts_next_year'], axis = 1)
+        features = np.array(target)
+        feature_list = list(target.columns)
+        
+        # run model 
+        rf = RandomForestRegressor(n_estimators = 3000, random_state = 42)
+        rf.fit(features, labels)
+        model_dict[pos] = rf
+
+        # Get numerical feature importances
+        importances = list(rf.feature_importances_)
+        feature_importances = [(feature, round(importance, 2)) for feature, importance in zip(feature_list, importances)]
+        feature_importances = sorted(feature_importances, key = lambda x: x[1], reverse = True)
+        [print('Variable: {:20} Importance: {}'.format(*pair)) for pair in feature_importances]
+    
+    ## get ouptuts
+    final_dict = copy.deepcopy(predict_dict)
+    for pos in predict_dict:
+        model = model_dict[pos]
+        final_dict[pos]['prediction'] = model.predict(predict_dict[pos])
+        final_dict[pos]['Names'] = outcomes[pos]['Name']
+        final_dict[pos]['pts_next_year'] = outcomes[pos]['pts_next_year']
+    return final_dict
+
 
