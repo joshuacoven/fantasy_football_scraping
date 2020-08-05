@@ -7,8 +7,8 @@ import statsmodels.formula.api as smf
 import copy
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
-
-
+from skgarden import RandomForestQuantileRegressor
+import matplotlib.pyplot as plt
 
 ####################################### Functions ######################################
 
@@ -24,7 +24,7 @@ def data_assembly(start_year, current_year):
         dfyear['Year'] = x
         if x == start_year:
             database = dfyear
-        else: database = database.append(dfyear, ignore_index = True)
+        else: database = database.append(dfyear, ignore_index = True, sort = False)
 
     #Rename columns, eliminate duplicate column titles as rows
     database = database.rename(columns = {'Player':'Name', 'Att':'PaAtt', 'Yds':'PaYds', 'TD':'PaTD','Att.1':'RuAtt', 'Yds.1':'RuYds', 'TD.1':'RuTD', 'Y/A':'RuY/A', 'Y/R':'ReYds/R', 'Att.2':'ReAtt', 'Yds.2':'ReYds', 'TD.2':'ReTD'})
@@ -34,8 +34,6 @@ def data_assembly(start_year, current_year):
     database['Name'] = database['Name'].apply(lambda x: x[0:len(x)-1] if x[len(x)-1] == '+' else x)
     database['Name'] = database['Name'].apply(lambda x: x[0:len(x)-1] if x[len(x)-1] == '*' else x)
     return database
-
-
 
 
 #Pull rookie data from pro football focus
@@ -62,6 +60,7 @@ def rookie_assembly(start_year, current_year):
             | (database.FantPos == 'RB')
             | (database.FantPos == 'TE')].reset_index(drop = True)
     return database
+
 
 # pull combine data from pro football focus
 def combine_assembly(start_year, current_year):
@@ -92,10 +91,10 @@ def combine_assembly(start_year, current_year):
                                               if isinstance(x, str) else np.nan)
 
     # impute combine statistics based on position mean
-    cols = ['height', 'Wt', 'Dash', 'Vertical', 'Bench', 'Broad_Jump', 'Three_Cone', 'Shuttle']
-    for i in cols:
-        database[i] = database[i].astype(float)
-        database[i] = database[i].fillna(database.groupby('FantPos')[i].transform('mean'))
+    #cols = ['height', 'Wt', 'Dash', 'Vertical', 'Bench', 'Broad_Jump', 'Three_Cone', 'Shuttle']
+    #for i in cols:
+     #   database[i] = database[i].astype(float)
+      #  database[i] = database[i].fillna(database.groupby('FantPos')[i].transform('mean'))
     return database
 
 
@@ -164,7 +163,7 @@ def college_assembly(start_year, current_year):
     return database
 
 
-def ADP_assembly(start_year, current_year, rk_opt):
+def ADP_assembly(start_year, current_year):
     database = []
     for x in range(start_year, current_year):
         page = requests.get("https://fantasyfootballcalculator.com/adp/ppr/12-team/all/%d" % x)
@@ -179,8 +178,6 @@ def ADP_assembly(start_year, current_year, rk_opt):
             database = database.append(dfyear, ignore_index = True)
         database = database[['Name', 'Year', 'Std.Dev']]
         # the year is off of the profootball focus data by 1
-        if rk_opt != 'rookie':
-            database['Year'] = database['Year'] - 1
         database = database.replace('Odell Beckham Jr', 'Odell Beckham')
     return database
 
@@ -210,8 +207,6 @@ def new_assembly(start_year, current_year, rk_opt):
         new_test['Name'] = new_test['List'].apply(lambda x: x[len(x)-3] + ' ' + x[0])
         new_test['Name'] = new_test['Name']  + new_test['List'].apply(lambda x: ' ' + x[1] if len(x) == 5 else '')
         new_test = new_test[['Name', 'Tm', 'Avg. Pick', 'Year']]  
-        if rk_opt != 'rookie':
-            new_test['Year'] = new_test['Year'] - 1
         new_test['Tm'] = new_test['Tm'].str.replace('JAC', 'JAX')
         new_test['Tm'] = new_test['Tm'].str.replace('KCC', 'KAN')
         new_test['Tm'] = new_test['Tm'].str.replace('GBP', 'GNB')
@@ -344,6 +339,100 @@ def rf_model(pos_dict, predict_year, sz):
 
         # Get numerical feature importances
         importances = list(rf.feature_importances_)
+        feature_importances = [(feature, round(importance, 2)) for feature, importance in zip(feature_list, importances)]
+        feature_importances = sorted(feature_importances, key = lambda x: x[1], reverse = True)
+        [print('Variable: {:20} Importance: {}'.format(*pair)) for pair in feature_importances]
+    
+    ## get ouptuts
+    final_dict = copy.deepcopy(predict_dict)
+    for pos in predict_dict:
+        model = model_dict[pos]
+        final_dict[pos]['prediction'] = model.predict(predict_dict[pos])
+        final_dict[pos]['Names'] = outcomes[pos]['Name']
+        final_dict[pos]['pts_next_year'] = outcomes[pos]['pts_next_year']
+    return final_dict
+
+
+### Quantile random forest model #################################################
+# inputs, a dictionary where each position has a dataframe of desired features, no nans, imputed values
+# a year one year before the year you want to predict for, ex: 2018 trains the model to make predictions about 2019
+# a window size, number of years of data you want to include in the model
+def rfqr_model(pos_dict, predict_year, sz):
+    model_dict = {}
+    predict_dict = {}
+    outcomes = {}
+    for pos in pos_dict:
+        print(pos)
+        target = copy.deepcopy(pos_dict[pos])
+        
+        # team dummy variables
+        dum = pd.get_dummies(target.Tm)
+        target = target.drop('Tm', axis = 1)
+        target = pd.concat([target, dum], axis=1)
+        
+        # save these values to evaluate predictions later
+        outcomes[pos] = target.loc[target.Year == predict_year]\
+            .reset_index(drop = True)[['Name', 'pts_next_year']]
+        
+        # set aside data to use for model prediction when the model is done
+        predict_dict[pos] = target.loc[target.Year == predict_year]\
+            .reset_index(drop = True)\
+            .drop(['Year', 'pts_next_year', 'Name'], axis=1)
+        
+        # make sure new values arent used in the modeling
+        target = target.loc[target.Year < predict_year].reset_index(drop = True)
+        # only use 'sz' years of data before prediction year
+        target = target.loc[target.Year > predict_year - sz].drop(['Year', 'Name'], axis=1)
+
+        # separate labels, targets, features
+        labels = np.array(target['pts_next_year'])
+        target = target.drop(['pts_next_year'], axis = 1)
+        features = np.array(target)
+        feature_list = list(target.columns)
+        
+        # run model 
+        rfqr = RandomForestQuantileRegressor(random_state=0, n_estimators=3000)
+        rfqr.fit(features, labels)
+        model_dict[pos] = rfqr
+
+        
+        
+        
+        
+        #
+        upper = np.concatenate(([], rfqr.predict(predict_dict[pos], quantile=98.5)))
+        lower = np.concatenate(([], rfqr.predict(predict_dict[pos], quantile=2.5)))
+        median = np.concatenate(([], rfqr.predict(predict_dict[pos], quantile=50)))
+
+        #interval = upper - lower
+        #sort_ind = np.argsort(interval)
+        y_true_all = outcomes[pos]['pts_next_year']#[sort_ind]
+        upper = upper#[sort_ind]
+        lower = lower#[sort_ind]
+        median = median#[sort_ind]
+        #mean = (upper + lower) / 2
+
+        # Center such that the mean of the prediction interval is at 0.0
+        #y_true_all -= mean
+        #upper -= mean
+        #lower -= mean
+
+        plt.plot(y_true_all, "ro")
+        plt.fill_between(
+            np.arange(len(upper)), lower, upper, alpha=0.2, color="r",
+            label="Pred. interval")
+        plt.plot(median)
+        plt.xlabel("X variable")
+        plt.ylabel("Points")
+        plt.xlim([0, 100])
+        plt.show()
+        
+        
+        
+        
+        
+        # Get numerical feature importances
+        importances = list(rfqr.feature_importances_)
         feature_importances = [(feature, round(importance, 2)) for feature, importance in zip(feature_list, importances)]
         feature_importances = sorted(feature_importances, key = lambda x: x[1], reverse = True)
         [print('Variable: {:20} Importance: {}'.format(*pair)) for pair in feature_importances]

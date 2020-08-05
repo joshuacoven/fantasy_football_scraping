@@ -1,7 +1,22 @@
 # fantasy_football_scraping
-This repo has a collection of scripts made to assemble data for fantasy football analysis as well as selenium scripts to pull data from my leagues to keep track of performance of fantasy football managers
+This repo has a collection of scripts made to assemble data for fantasy football analysis as well as selenium scripts to pull data from my leagues to keep track of performance of fantasy football managers. 
 
-# database_assembly.ipynb
+## findings so far
+### database
+* Already well established
+    * Draft a RB or WR early
+        * The distribution of quarterbacks is flatter than that of running backs, wide receivers, and tight ends
+        * This reinforces that the value above replacement of a non-quarterback is higher for early picks than for quarterbacks
+* Less trivial
+    * Top WR's are less likely to be mediocre than are top RB's, although they have greater bust potential
+        * Top WR's have a higher likelihood of repeating near the top of their position than top RB's
+        * Top WR's also have a higher likelihood of finishing outside of the top 30 in their position than do top RB's
+
+### The model
+* The model pulls from 6 sources
+    * 
+
+## database_assembly.ipynb
 Pulls from profootball focus data of each player for specified years using beautiful soup.
 
 Can use this to run regressions and machine learning analysis
@@ -10,7 +25,7 @@ Can use this to run regressions and machine learning analysis
     * Change in points per game next year
     * Change in games next year
 
-# To do:
+## To do:
 Does not require new scraping:
 Need a targets available, targets taken measure for WR's and TE's
 	Base off attempts by QB of team, tally up targets of each WR on the team last year
@@ -21,7 +36,7 @@ Put some cleaning back into the functions
 Need a better validation function to measure performance
 Can take out the least relevant variables
 
-Requires new scraping:
+### Requires new scraping:
 * Add actual injury info, dummy variables for different injuries in the previous year(s)
 * Need some sort of analysis for rookies
     * Does the team they were drafted by have a star at the same position?
@@ -33,7 +48,7 @@ Requires new scraping:
     * Look at second half performance and how it affects ADP??
 * New coach flag
 
-Do-able with current data:
+### Do-able with current data:
 * Can get a flag for backup RB
 * "On a good team flag," maybe it's the winning percentage of the team, or a flag on > .500 winning pct
 

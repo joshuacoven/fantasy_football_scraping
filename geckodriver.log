@@ -1,0 +1,135 @@
+1564543189038	mozrunner::runner	INFO	Running command: "/Applications/Firefox.app/Contents/MacOS/firefox-bin" "-marionette" "-foreground" "-no-remote" "-profile" "/var/folders/qx/s00gcshx4c79v6v48bms99400000gn/T/rust_mozprofile.tYcrqko1I4ms"
+1564543194322	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: mozillaAddons
+1564543194323	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: resource://pdf.js/
+1564543194323	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: about:reader*
+1564543196099	Marionette	INFO	Listening on port 54662
+1564543227189	mozrunner::runner	INFO	Running command: "/Applications/Firefox.app/Contents/MacOS/firefox-bin" "-marionette" "-foreground" "-no-remote" "-profile" "/var/folders/qx/s00gcshx4c79v6v48bms99400000gn/T/rust_mozprofile.NBwgmSSkR0yc"
+1564543227626	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: mozillaAddons
+1564543227626	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: resource://pdf.js/
+1564543227626	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: about:reader*
+1564543229283	Marionette	INFO	Listening on port 54700
+1564543229333	Marionette	WARN	TLS certificate errors will be ignored for this session
+1564543322512	mozrunner::runner	INFO	Running command: "/Applications/Firefox.app/Contents/MacOS/firefox-bin" "-marionette" "-foreground" "-no-remote" "-profile" "/var/folders/qx/s00gcshx4c79v6v48bms99400000gn/T/rust_mozprofile.fQkiqNtNWu6s"
+1564543322976	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: mozillaAddons
+1564543322976	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: resource://pdf.js/
+1564543322976	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: about:reader*
+1564543324628	Marionette	INFO	Listening on port 54835
+1564543324650	Marionette	WARN	TLS certificate errors will be ignored for this session
+console.error: BroadcastService: 
+  receivedBroadcastMessage: handler for
+  remote-settings/monitor_changes
+  threw error:
+  Message: Error: Polling for changes failed: http://%(server)s/dummy/blocklist//buckets/monitor/collections/changes/records?_expected=%221564532590680%22 is not a valid URL..
+  Stack:
+    remoteSettingsFunction/remoteSettings.pollChanges@resource://services-settings/remote-settings.js:203:13
+
+JavaScript error: https://tags.bluekai.com/site/24667?ret=html&phint=pageName%3Despn%3Afrontpage&phint=channel%3Despn%3Afrontpage&phint=eVar34%3D&phint=events%3Devent3&phint=prop1%3Despn&phint=swid%3D690C083C-A01E-4E75-CE57-F60F86CAD360&phint=unid%3D&phint=prop4%3Dindex&phint=prop9%3D&phint=prop23%3D&phint=prop25%3D&phint=prop26%3Dno%2Bleague&phint=prop30%3Dpremium-no&phint=prop32%3D&phint=prop45%3D&phint=__bk_t%3DESPN%3A%20Serving%20sports%20fans.%20Anytime.%20Anywhere.&phint=__bk_k%3DESPN%2C%20sports%20scores%2C%20sports%20news%2C%20football%20scores%2C%20cricket%20scores%2C%20rugby%20scores%2C%20f1%20scores%2C%20golf%20scores%2C%20tennis%20scores%2C%20MLB%20scores%2C%20NFL%20scores%2C%20NBA%20scores%2C%20NHL%20scores%2C%20College%20Football%20scores%2C%20College%20Basketball%20scores%2C%20sports%20videos%2C%20sports%20information%2C%20Fantasy%20sports%2C%20Fantasy%20games%2C%20Fantasy%20football%2C%20Fantasy%20baseball&phint=__bk_l%3Dhttps%3A%2F%2Fwww.espn.com%2F&limit=10&r=71837626, line 16: SyntaxError: unexpected token: identifier
+JavaScript error: https://tags.bluekai.com/site/24667?ret=html&phint=pageName%3Despn%3Anfl%3Aindex&phint=channel%3Despn%3Anfl&phint=eVar34%3D&phint=events%3Devent3&phint=prop1%3Despn&phint=swid%3D690C083C-A01E-4E75-CE57-F60F86CAD360&phint=unid%3Db7b48de6-612b-4c42-8946-0deb9fe79c1e&phint=prop4%3Dindex&phint=prop9%3D&phint=prop23%3D&phint=prop25%3Dfootball&phint=prop26%3Dnfl&phint=prop30%3Dpremium-no&phint=prop32%3D&phint=prop45%3D&phint=__bk_t%3DNFL%20Football%20Teams%2C%20Scores%2C%20Stats%2C%20News%2C%20Standings%2C%20Rumors%20-%20National%20Football%20League%20-%20ESPN&phint=__bk_k%3Dnfl%2C%20national%20american%20football%20league%2C%20pro%20american%20football%2C%20nfl%20american%20football&phint=__bk_pr%3Dhttp%3A%2F%2Ffantasy.espn.com%2Ffootball%2Ftools%2Freactivate%3FseasonId%3D2019%26ex_cid%3DFFL2019_FantasyIndexNavReactivate&phint=__bk_l%3Dhttps%3A%2F%2Fwww.espn.com%2Fnfl%2F&limit=10&r=94426701, line 15: SyntaxError: unexpected token: identifier
+
+###!!! [Child][MessageChannel] Error: (msgtype=0x530005,name=PHttpChannel::Msg_Cancel) Closed channel: cannot send/recv
+
+
+###!!! [Child][MessageChannel] Error: (msgtype=0x530005,name=PHttpChannel::Msg_Cancel) Closed channel: cannot send/recv
+
+
+###!!! [Child][MessageChannel] Error: (msgtype=0x530005,name=PHttpChannel::Msg_Cancel) Closed channel: cannot send/recv
+
+
+###!!! [Child][MessageChannel] Error: (msgtype=0x530005,name=PHttpChannel::Msg_Cancel) Closed channel: cannot send/recv
+
+1564543431482	mozrunner::runner	INFO	Running command: "/Applications/Firefox.app/Contents/MacOS/firefox-bin" "-marionette" "-foreground" "-no-remote" "-profile" "/var/folders/qx/s00gcshx4c79v6v48bms99400000gn/T/rust_mozprofile.E3kUE1KXL66m"
+1564543431964	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: mozillaAddons
+1564543431964	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: resource://pdf.js/
+1564543431964	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: about:reader*
+1564543433406	Marionette	INFO	Listening on port 55071
+1564543433427	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript error: https://www.espn.com/fantasy/ line 1 > scriptElement, line 2: TypeError: e.onFail is undefined
+JavaScript error: https://www.espn.com/fantasy/ line 1 > scriptElement, line 2: TypeError: e.onFail is undefined
+JavaScript error: https://www.espn.com/fantasy/ line 1 > scriptElement, line 2: TypeError: e.onFail is undefined
+JavaScript error: https://www.espn.com/fantasy/ line 1 > scriptElement, line 2: TypeError: e.onFail is undefined
+JavaScript error: https://www.espn.com/fantasy/ line 1 > scriptElement, line 2: TypeError: e.onFail is undefined
+JavaScript error: https://www.espn.com/fantasy/ line 1 > scriptElement, line 2: TypeError: e.onFail is undefined
+JavaScript error: https://www.espn.com/fantasy/ line 1 > scriptElement, line 2: TypeError: e.onFail is undefined
+JavaScript error: https://www.espn.com/fantasy/ line 1 > scriptElement, line 2: TypeError: e.onFail is undefined
+
+###!!! [Child][MessageChannel] Error: (msgtype=0x530005,name=PHttpChannel::Msg_Cancel) Closed channel: cannot send/recv
+
+
+###!!! [Child][MessageChannel] Error: (msgtype=0x530005,name=PHttpChannel::Msg_Cancel) Closed channel: cannot send/recv
+
+
+###!!! [Child][MessageChannel] Error: (msgtype=0x530005,name=PHttpChannel::Msg_Cancel) Closed channel: cannot send/recv
+
+
+###!!! [Child][MessageChannel] Error: (msgtype=0x530005,name=PHttpChannel::Msg_Cancel) Closed channel: cannot send/recv
+
+
+###!!! [Child][MessageChannel] Error: (msgtype=0x530005,name=PHttpChannel::Msg_Cancel) Closed channel: cannot send/recv
+
+JavaScript error: https://tags.bluekai.com/site/24667?ret=html&phint=pageName%3Despn%3Afrontpage&phint=channel%3Despn%3Afrontpage&phint=eVar34%3D&phint=events%3Devent3&phint=prop1%3Despn&phint=swid%3D3DA30134-4DC1-418C-C1F2-C03EE6CA5517&phint=unid%3D&phint=prop4%3Dindex&phint=prop9%3D&phint=prop23%3D&phint=prop25%3D&phint=prop26%3Dno%2Bleague&phint=prop30%3Dpremium-no&phint=prop32%3D&phint=prop45%3D&phint=__bk_t%3DESPN%3A%20Serving%20sports%20fans.%20Anytime.%20Anywhere.&phint=__bk_k%3DESPN%2C%20sports%20scores%2C%20sports%20news%2C%20football%20scores%2C%20cricket%20scores%2C%20rugby%20scores%2C%20f1%20scores%2C%20golf%20scores%2C%20tennis%20scores%2C%20MLB%20scores%2C%20NFL%20scores%2C%20NBA%20scores%2C%20NHL%20scores%2C%20College%20Football%20scores%2C%20College%20Basketball%20scores%2C%20sports%20videos%2C%20sports%20information%2C%20Fantasy%20sports%2C%20Fantasy%20games%2C%20Fantasy%20football%2C%20Fantasy%20baseball&phint=__bk_l%3Dhttps%3A%2F%2Fwww.espn.com%2F&limit=10&r=37559025, line 16: SyntaxError: unexpected token: identifier
+1564543610131	mozrunner::runner	INFO	Running command: "/Applications/Firefox.app/Contents/MacOS/firefox-bin" "-marionette" "-foreground" "-no-remote" "-profile" "/var/folders/qx/s00gcshx4c79v6v48bms99400000gn/T/rust_mozprofile.djeL6i1qho5u"
+1564543610701	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: mozillaAddons
+1564543610702	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: resource://pdf.js/
+1564543610702	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: about:reader*
+1564543612376	Marionette	INFO	Listening on port 55536
+1564543612382	Marionette	WARN	TLS certificate errors will be ignored for this session
+1564543626991	Marionette	INFO	Stopped listening on port 55536
+1564543640063	mozrunner::runner	INFO	Running command: "/Applications/Firefox.app/Contents/MacOS/firefox-bin" "-marionette" "-foreground" "-no-remote" "-profile" "/var/folders/qx/s00gcshx4c79v6v48bms99400000gn/T/rust_mozprofile.rOckWaNXIF83"
+1564543640521	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: mozillaAddons
+1564543640521	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: resource://pdf.js/
+1564543640521	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: about:reader*
+1564543642183	Marionette	INFO	Listening on port 55624
+1564543642206	Marionette	WARN	TLS certificate errors will be ignored for this session
+1564543656592	Marionette	INFO	Stopped listening on port 55624
+1564543672284	mozrunner::runner	INFO	Running command: "/Applications/Firefox.app/Contents/MacOS/firefox-bin" "-marionette" "-foreground" "-no-remote" "-profile" "/var/folders/qx/s00gcshx4c79v6v48bms99400000gn/T/rust_mozprofile.5MBzsvK6wjvJ"
+1564543672768	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: mozillaAddons
+1564543672768	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: resource://pdf.js/
+1564543672768	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: about:reader*
+1564543674434	Marionette	INFO	Listening on port 55713
+1564543674530	Marionette	WARN	TLS certificate errors will be ignored for this session
+1564543689101	Marionette	INFO	Stopped listening on port 55713
+console.error: BroadcastService: 
+  receivedBroadcastMessage: handler for
+  remote-settings/monitor_changes
+  threw error:
+  Message: Error: Polling for changes failed: http://%(server)s/dummy/blocklist//buckets/monitor/collections/changes/records?_expected=%221564532590680%22 is not a valid URL..
+  Stack:
+    remoteSettingsFunction/remoteSettings.pollChanges@resource://services-settings/remote-settings.js:203:13
+
+console.error: BroadcastService: 
+  receivedBroadcastMessage: handler for
+  remote-settings/monitor_changes
+  threw error:
+  Message: Error: Polling for changes failed: http://%(server)s/dummy/blocklist//buckets/monitor/collections/changes/records?_expected=%221564532590680%22 is not a valid URL..
+  Stack:
+    remoteSettingsFunction/remoteSettings.pollChanges@resource://services-settings/remote-settings.js:203:13
+
+console.error: BroadcastService: 
+  receivedBroadcastMessage: handler for
+  remote-settings/monitor_changes
+  threw error:
+  Message: Error: Polling for changes failed: http://%(server)s/dummy/blocklist//buckets/monitor/collections/changes/records?_expected=%221564532590680%22 is not a valid URL..
+  Stack:
+    remoteSettingsFunction/remoteSettings.pollChanges@resource://services-settings/remote-settings.js:203:13
+
+1564544809891	Marionette	INFO	Stopped listening on port 54662
+1564544812034	Marionette	INFO	Stopped listening on port 54700
+1564544814342	Marionette	INFO	Stopped listening on port 54835
+1564544816398	Marionette	INFO	Stopped listening on port 55071
+1565096139012	mozrunner::runner	INFO	Running command: "/Applications/Firefox.app/Contents/MacOS/firefox-bin" "-marionette" "-foreground" "-no-remote" "-profile" "/var/folders/qx/s00gcshx4c79v6v48bms99400000gn/T/rust_mozprofile.BWHQvpkq89Ex"
+1565096139790	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: mozillaAddons
+1565096139790	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: resource://pdf.js/
+1565096139790	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: about:reader*
+1565096141871	Marionette	INFO	Listening on port 60630
+1565096141945	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript error: https://cdn-ssl.vidible.tv/prod/ad-client/js/9.4.14/0.js, line 622: NS_ERROR_NOT_INITIALIZED: 
+[Child 1942, Chrome_ChildThread] WARNING: pipe error: Broken pipe: file /builds/worker/workspace/build/src/ipc/chromium/src/chrome/common/ipc_channel_posix.cc, line 726
+[Child 1942, Chrome_ChildThread] WARNING: pipe error: Broken pipe: file /builds/worker/workspace/build/src/ipc/chromium/src/chrome/common/ipc_channel_posix.cc, line 726
+1565096152695	Marionette	INFO	Stopped listening on port 60630
+1565096168084	mozrunner::runner	INFO	Running command: "/Applications/Firefox.app/Contents/MacOS/firefox-bin" "-marionette" "-foreground" "-no-remote" "-profile" "/var/folders/qx/s00gcshx4c79v6v48bms99400000gn/T/rust_mozprofile.zjS5nI9hr8zB"
+1565096168434	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: mozillaAddons
+1565096168434	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: resource://pdf.js/
+1565096168434	addons.webextension.screenshots@mozilla.org	WARN	Loading extension 'screenshots@mozilla.org': Reading manifest: Invalid extension permission: about:reader*
+1565096170072	Marionette	INFO	Listening on port 60746
+1565096170128	Marionette	WARN	TLS certificate errors will be ignored for this session
+1565096184811	Marionette	INFO	Stopped listening on port 60746
